@@ -1,0 +1,28 @@
+{
+  "name": "psx/json",
+  "description": "Handle JSON patch, pointer and web token specifications",
+  "keywords": ["json", "patch", "pointer", "web-token"],
+  "homepage": "http://phpsx.org",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Christoph Kappestein",
+      "email": "christoph.kappestein@gmail.com",
+      "homepage": "http://christoph.kappestein.com/"
+    }
+  ],
+  "require": {
+    "php": ">=5.5",
+    "psx/data": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "PSX\\Json\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "PSX\\Json\\Tests\\": "tests/"
+    }
+  }
+}
