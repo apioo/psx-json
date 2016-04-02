@@ -20,7 +20,7 @@
 
 namespace PSX\Json;
 
-use PSX\Data\RecordInterface;
+use PSX\Data\RecordAbstract;
 
 /**
  * Comparator
@@ -59,7 +59,7 @@ class Comparator
                 return false;
             }
         } elseif ($left instanceof \stdClass) {
-            if ($right instanceof \stdClass && count((array) $left) === count((array) $right)) {
+            if (($right instanceof \stdClass || $right instanceof RecordAbstract) && count((array) $left) === count((array) $right)) {
                 foreach ($left as $key => $value) {
                     if (isset($right->$key)) {
                         if (!self::compare($value, $right->$key)) {
@@ -71,29 +71,6 @@ class Comparator
                 }
 
                 return true;
-            } else {
-                return false;
-            }
-        } elseif ($left instanceof RecordInterface) {
-            if ($right instanceof RecordInterface) {
-                $leftFields  = $left->getProperties();
-                $rightFields = $right->getProperties();
-
-                if (count($leftFields) === count($rightFields)) {
-                    foreach ($leftFields as $key => $value) {
-                        if (isset($rightFields[$key])) {
-                            if (!self::compare($value, $rightFields[$key])) {
-                                return false;
-                            }
-                        } else {
-                            return false;
-                        }
-                    }
-
-                    return true;
-                } else {
-                    return false;
-                }
             } else {
                 return false;
             }
