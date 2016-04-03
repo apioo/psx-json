@@ -20,7 +20,7 @@
 
 namespace PSX\Json\Tests;
 
-use PSX\Data\Record;
+use PSX\Record\Record;
 use PSX\Json\Comparator;
 
 /**
@@ -150,5 +150,65 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(Comparator::compare((object) [
             'bar' => 'foo',
         ], 'foo'));
+    }
+
+    public function testCompareRecord()
+    {
+        $this->assertTrue(Comparator::compare(Record::fromArray([
+        ]), Record::fromArray([
+        ])));
+
+        $this->assertTrue(Comparator::compare(Record::fromArray([
+            'foo' => 'bar',
+        ]), Record::fromArray([
+            'foo' => 'bar',
+        ])));
+
+        $this->assertTrue(Comparator::compare(Record::fromArray([
+            'foo' => Record::fromArray([
+                'bar' => 'foo',
+                'foo' => 'bar',
+            ])
+        ]), Record::fromArray([
+            'foo' => Record::fromArray([
+                'foo' => 'bar',
+                'bar' => 'foo',
+            ])
+        ])));
+
+        $this->assertFalse(Comparator::compare(Record::fromArray([
+            'foo' => 'bar'
+        ]), Record::fromArray([
+        ])));
+
+        $this->assertFalse(Comparator::compare(Record::fromArray([
+        ]), Record::fromArray([
+            'foo' => 'bar'
+        ])));
+
+        $this->assertFalse(Comparator::compare(Record::fromArray([
+            'foo' => Record::fromArray([
+                'bar' => 'foo',
+                'foo' => 'bar',
+            ])
+        ]), Record::fromArray([
+            'foo' => Record::fromArray([
+                'foo' => 'bar',
+            ])
+        ])));
+
+        $this->assertFalse(Comparator::compare(Record::fromArray([
+            'foo' => 'bar',
+        ]), Record::fromArray([
+            'bar' => 'foo',
+        ])));
+
+        $this->assertFalse(Comparator::compare('foo', Record::fromArray([
+            'bar' => 'foo',
+        ])));
+
+        $this->assertFalse(Comparator::compare(Record::fromArray([
+            'bar' => 'foo',
+        ]), 'foo'));
     }
 }

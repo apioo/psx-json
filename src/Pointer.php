@@ -21,7 +21,7 @@
 namespace PSX\Json;
 
 use InvalidArgumentException;
-use PSX\Data\RecordInterface;
+use PSX\Record\RecordInterface;
 
 /**
  * Pointer
