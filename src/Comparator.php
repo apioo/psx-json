@@ -33,7 +33,8 @@ class Comparator
 {
     /**
      * Compares whether two values are equals. Uses the comparsion rules
-     * described in the JSON patch RFC
+     * described in the JSON patch RFC. Basically that means that the order of
+     * elements in objects does not matter
      *
      * @see https://tools.ietf.org/html/rfc6902#section-4.6
      * @param mixed $left
@@ -42,63 +43,45 @@ class Comparator
      */
     public static function compare($left, $right)
     {
-        if (is_array($left)) {
-            if (is_array($right) && count($left) === count($right)) {
-                foreach ($left as $key => $value) {
-                    if (isset($right[$key])) {
-                        if (!self::compare($value, $right[$key])) {
-                            return false;
-                        }
-                    } else {
-                        return false;
-                    }
-                }
+        if (self::isContainer($left) && self::isContainer($right)) {
+            $leftFields  = self::normalize($left);
+            $rightFields = self::normalize($right);
 
-                return true;
-            } else {
+            if (count($leftFields) !== count($rightFields)) {
                 return false;
             }
-        } elseif ($left instanceof \stdClass) {
-            if ($right instanceof \stdClass && count((array) $left) === count((array) $right)) {
-                foreach ($left as $key => $value) {
-                    if (isset($right->$key)) {
-                        if (!self::compare($value, $right->$key)) {
-                            return false;
-                        }
-                    } else {
+
+            foreach ($leftFields as $key => $value) {
+                if (isset($rightFields[$key])) {
+                    if (!self::compare($value, $rightFields[$key])) {
                         return false;
                     }
-                }
-
-                return true;
-            } else {
-                return false;
-            }
-        } elseif ($left instanceof RecordInterface) {
-            if ($right instanceof RecordInterface) {
-                $leftFields  = $left->getProperties();
-                $rightFields = $right->getProperties();
-
-                if (count($leftFields) === count($rightFields)) {
-                    foreach ($leftFields as $key => $value) {
-                        if (isset($rightFields[$key])) {
-                            if (!self::compare($value, $rightFields[$key])) {
-                                return false;
-                            }
-                        } else {
-                            return false;
-                        }
-                    }
-
-                    return true;
                 } else {
                     return false;
                 }
-            } else {
-                return false;
             }
+
+            return true;
         } else {
             return $left === $right;
+        }
+    }
+
+    protected static function isContainer($data)
+    {
+        return is_array($data) || $data instanceof \stdClass || $data instanceof RecordInterface;
+    }
+
+    protected static function normalize($data)
+    {
+        if (is_array($data)) {
+            return $data;
+        } elseif ($data instanceof \stdClass) {
+            return (array) $data;
+        } elseif ($data instanceof RecordInterface) {
+            return $data->getProperties();
+        } else {
+            return null;
         }
     }
 }

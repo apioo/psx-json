@@ -1,0 +1,13 @@
+{
+  "string": "bar",
+  "number": 12,
+  "boolean": false,
+  "null": null,
+  "array": ["foo"],
+  "arrayObject": [{
+    "foo": "bar"
+  }],
+  "object": {
+    "foo": "bar"
+  }
+}

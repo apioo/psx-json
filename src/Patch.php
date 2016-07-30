@@ -21,6 +21,8 @@
 namespace PSX\Json;
 
 use InvalidArgumentException;
+use PSX\Record\Record;
+use PSX\Record\RecordInterface;
 
 /**
  * Class to apply patch operations on a json object. Based on the json-patch-php
@@ -63,7 +65,12 @@ class Patch
                     break;
 
                 case 'test':
-                    $this->doTest($data, new Pointer($path), $path, $value);
+                    $pointer = new Pointer($path);
+                    $actual  = $pointer->evaluate($data);
+
+                    if (!Comparator::compare($value, $actual)) {
+                        throw new InvalidArgumentException('Test value is different');
+                    }
                     break;
 
                 case 'copy':
@@ -107,6 +114,10 @@ class Patch
                 if (isset($data->$part)) {
                     $data->$part = $this->doOperation($data->$part, $parts, $op, $path, $value);
                 }
+            } elseif ($data instanceof RecordInterface) {
+                if ($data->hasProperty($part)) {
+                    $data->setProperty($part, $this->doOperation($data->getProperty($part), $parts, $op, $path, $value));
+                }
             } else {
                 throw new InvalidArgumentException('Invalid path ' . $path);
             }
@@ -143,17 +154,22 @@ class Patch
                     }
                 }
             }
+        } elseif ($data instanceof RecordInterface) {
+            if ($part !== '') {
+                if ($op == 'add' || $op == 'append') {
+                    $data->setProperty($part, $value);
+                } elseif ($op == 'replace') {
+                    if ($data->hasProperty($part)) {
+                        $data->setProperty($part, $value);
+                    }
+                } elseif ($op == 'remove') {
+                    if ($data->hasProperty($part)) {
+                        $data->removeProperty($part);
+                    }
+                }
+            }
         }
 
         return $data;
-    }
-
-    protected function doTest($data, Pointer $pointer, $path, $value)
-    {
-        $actual = $pointer->evaluate($data);
-
-        if (!Comparator::compare($value, $actual)) {
-            throw new InvalidArgumentException('Test value is different');
-        }
     }
 }
