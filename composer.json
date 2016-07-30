@@ -1,7 +1,7 @@
 {
   "name": "psx/json",
-  "description": "Handle JSON patch, pointer and web token specifications",
-  "keywords": ["json", "patch", "pointer", "web-token"],
+  "description": "Read and transform JSON documents through JSON-Patch/Pointer",
+  "keywords": ["json", "patch", "pointer"],
   "homepage": "http://phpsx.org",
   "license": "Apache-2.0",
   "authors": [
