@@ -79,7 +79,9 @@ class Pointer
             return [];
         }
 
+        $path  = rawurldecode($path);
         $parts = explode('/', $path);
+
         if (array_shift($parts) !== '') {
             throw new InvalidArgumentException('Pointer must start with a /');
         }
