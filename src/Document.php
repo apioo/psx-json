@@ -20,9 +20,8 @@
 
 namespace PSX\Json;
 
-use PSX\Record\Record;
-use PSX\Record\RecordInterface;
 use InvalidArgumentException;
+use PSX\Record\Record;
 
 /**
  * Document

@@ -20,8 +20,8 @@
 
 namespace PSX\Json\Tests;
 
-use PSX\Record\Record;
 use PSX\Json\Comparator;
+use PSX\Record\Record;
 
 /**
  * ComparatorTest
