@@ -20,6 +20,7 @@
 
 namespace PSX\Json\Tests;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Json\Parser;
 
 /**
@@ -29,7 +30,7 @@ use PSX\Json\Parser;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class JsonTest extends \PHPUnit_Framework_TestCase
+class JsonTest extends TestCase
 {
     public function testJsonEncode()
     {

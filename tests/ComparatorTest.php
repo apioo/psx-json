@@ -20,6 +20,7 @@
 
 namespace PSX\Json\Tests;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Json\Comparator;
 use PSX\Record\Record;
 
@@ -30,7 +31,7 @@ use PSX\Record\Record;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class ComparatorTest extends \PHPUnit_Framework_TestCase
+class ComparatorTest extends TestCase
 {
     public function testCompareArray()
     {

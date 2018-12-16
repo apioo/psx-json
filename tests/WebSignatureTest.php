@@ -20,6 +20,7 @@
 
 namespace PSX\Json\Tests;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Json\WebSignature;
 
 /**
@@ -29,7 +30,7 @@ use PSX\Json\WebSignature;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class WebSignatureTest extends \PHPUnit_Framework_TestCase
+class WebSignatureTest extends TestCase
 {
     public function testCreate()
     {

@@ -20,6 +20,7 @@
 
 namespace PSX\Json\Tests;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Json\Document;
 
 /**
@@ -29,7 +30,7 @@ use PSX\Json\Document;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class DocumentTest extends \PHPUnit_Framework_TestCase
+class DocumentTest extends TestCase
 {
     public function testGet()
     {
