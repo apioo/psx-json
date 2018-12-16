@@ -54,6 +54,10 @@ class Patch
                 case 'add':
                 case 'append':
                 case 'replace':
+                    if (!property_exists($operation, 'value')) {
+                        throw new InvalidArgumentException('Value not available');
+                    }
+
                     $pointer = new Pointer($path);
                     $data    = $this->doOperation($data, $pointer->getParts(), $op, $path, $value);
                     break;
@@ -64,6 +68,10 @@ class Patch
                     break;
 
                 case 'test':
+                    if (!property_exists($operation, 'value')) {
+                        throw new InvalidArgumentException('Value not available');
+                    }
+
                     $pointer = new Pointer($path);
                     $actual  = $pointer->evaluate($data);
 
@@ -73,6 +81,10 @@ class Patch
                     break;
 
                 case 'copy':
+                    if (!property_exists($operation, 'from')) {
+                        throw new InvalidArgumentException('From not available');
+                    }
+
                     $pointer = new Pointer($from);
                     $value   = $pointer->evaluate($data);
 
@@ -81,12 +93,20 @@ class Patch
                     break;
 
                 case 'move':
+                    if (!property_exists($operation, 'from')) {
+                        throw new InvalidArgumentException('From not available');
+                    }
+
                     $pointer = new Pointer($from);
                     $value   = $pointer->evaluate($data);
                     $data    = $this->doOperation($data, $pointer->getParts(), 'remove', $path, null);
                     
                     $pointer = new Pointer($path);
                     $data    = $this->doOperation($data, $pointer->getParts(), 'add', $path, $value);
+                    break;
+
+                default:
+                    throw new InvalidArgumentException('Invalid operator');
                     break;
             }
         }
@@ -106,16 +126,22 @@ class Patch
 
         if (count($parts) > 0) {
             if (is_array($data)) {
-                if (isset($data[$part])) {
+                if (array_key_exists($part, $data)) {
                     $data[$part] = $this->doOperation($data[$part], $parts, $op, $path, $value);
+                } else {
+                    throw new InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
                 }
             } elseif ($data instanceof \stdClass) {
-                if (isset($data->$part)) {
+                if (property_exists($data, $part)) {
                     $data->$part = $this->doOperation($data->$part, $parts, $op, $path, $value);
+                } else {
+                    throw new InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
                 }
             } elseif ($data instanceof RecordInterface) {
                 if ($data->hasProperty($part)) {
                     $data->setProperty($part, $this->doOperation($data->getProperty($part), $parts, $op, $path, $value));
+                } else {
+                    throw new InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
                 }
             } else {
                 throw new InvalidArgumentException('Invalid path ' . $path);
@@ -127,17 +153,30 @@ class Patch
         if (is_array($data)) {
             if ($part == '-' || preg_match('/^(0|[1-9][0-9]*)$/', $part)) {
                 if ($op == 'add' || $op == 'append') {
-                    $index = ($part == '-') ? count($data) : $part;
-                    if ($op == 'append') {
-                        array_splice($data, $index, 0, $value);
+                    if ($part == '-') {
+                        $data[] = $value;
                     } else {
-                        array_splice($data, $index, 0, array($value));
+                        $index = intval($part);
+                        if ($index >= 0 && $index <= count($data)) {
+                            array_splice($data, $index, 0, [$value]);
+                        } else {
+                            throw new InvalidArgumentException('Key ' . $index . ' does not exist at /' . implode('/', $parts));
+                        }
                     }
                 } elseif ($op == 'replace') {
-                    array_splice($data, $part, 1, array($value));
+                    if (array_key_exists($part, $data)) {
+                        $data[$part] = $value;
+                    }
                 } elseif ($op == 'remove') {
-                    array_splice($data, $part, 1);
+                    if (array_key_exists($part, $data)) {
+                        unset($data[$part]);
+                        $data = array_values($data);
+                    } else {
+                        throw new InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
+                    }
                 }
+            } else {
+                throw new InvalidArgumentException('Invalid key at /' . implode('/', $parts));
             }
         } elseif ($data instanceof \stdClass) {
             if ($part !== '') {
@@ -150,6 +189,8 @@ class Patch
                 } elseif ($op == 'remove') {
                     if (property_exists($data, $part)) {
                         unset($data->$part);
+                    } else {
+                        throw new InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
                     }
                 }
             }
@@ -164,6 +205,8 @@ class Patch
                 } elseif ($op == 'remove') {
                     if ($data->hasProperty($part)) {
                         $data->removeProperty($part);
+                    } else {
+                        throw new InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
                     }
                 }
             }
