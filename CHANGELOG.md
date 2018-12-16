@@ -1,4 +1,8 @@
 
+### 1.0.3
+
+* Upgrade PHPUnit to 6.0
+
 ### 1.0.2
 
 * Added Document class
