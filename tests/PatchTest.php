@@ -33,40 +33,62 @@ use PSX\Json\Patch;
 class PatchTest extends TestCase
 {
     /**
-     * @dataProvider patchTestProvider
+     * @dataProvider patchProvider
      */
     public function testPatch($doc, $patch, $expected, $error, $comment)
     {
-        $patch = new Patch($patch);
+        $data = (new Patch($patch))->patch($doc);
 
         if ($expected !== null) {
-            $data = $patch->patch($doc);
-
             $this->assertEquals($expected, $data, $comment);
-        } elseif ($error !== null) {
-            try {
-                $data = $patch->patch($doc);
-
-                $this->fail($error);
-            } catch (\Exception $e) {
-                // must throw an exception
-            }
+        } else {
+            $this->assertInstanceOf(\stdClass::class, $data, $comment);
         }
     }
 
-    public function patchTestProvider()
+    public function patchProvider()
+    {
+        return $this->getTestCases(false);
+    }
+    
+    /**
+     * @dataProvider patchErrorProvider
+     */
+    public function testPatchError($doc, $patch, $expected, $error, $comment)
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        (new Patch($patch))->patch($doc);
+    }
+
+    public function patchErrorProvider()
+    {
+        return $this->getTestCases(true);
+    }
+
+    private function getTestCases($includeError)
     {
         $tests  = json_decode(file_get_contents(__DIR__ . '/patch_tests.json'));
         $result = [];
 
         foreach ($tests as $testCase) {
-            $result[] = [
-                $testCase->doc,
-                $testCase->patch,
-                isset($testCase->expected) ? $testCase->expected : null,
-                isset($testCase->error) ? $testCase->error : null,
-                isset($testCase->comment) ? $testCase->comment : null,
-            ];
+            $error    = $testCase->error ?? null;
+            $expected = $testCase->expected ?? null;
+            $disabled = $testCase->disabled ?? null;
+
+            if ($disabled) {
+                continue;
+            }
+
+            if (($includeError && $error !== null) || (!$includeError && $expected !== null)) {
+                $result[] = [
+                    $testCase->doc,
+                    $testCase->patch,
+                    $expected,
+                    $error,
+                    $testCase->comment ?? null,
+                ];
+            }
         }
 
         return $result;

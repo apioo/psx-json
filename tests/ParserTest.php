@@ -36,7 +36,7 @@ class JsonTest extends TestCase
     {
         $val = array('foo' => 'bar');
 
-        $this->assertEquals('{"foo":"bar"}', Parser::encode($val));
+        $this->assertJsonStringEqualsJsonString('{"foo":"bar"}', Parser::encode($val));
     }
 
     public function testJsonDecode()

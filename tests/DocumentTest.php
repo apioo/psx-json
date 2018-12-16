@@ -34,22 +34,29 @@ class DocumentTest extends TestCase
 {
     public function testGet()
     {
-        $docA = Document::fromFile(__DIR__ . '/test_a.json');
+        $document = Document::fromFile(__DIR__ . '/test_a.json');
 
-        $this->assertEquals('bar', $docA->get('/string'));
-        $this->assertEquals(12, $docA->get('/number'));
-        $this->assertEquals(false, $docA->get('/boolean'));
-        $this->assertEquals(null, $docA->get('/null'));
-        $this->assertEquals(['foo'], $docA->get('/array'));
-        $this->assertEquals('foo', $docA->get('/array/0'));
-        $this->assertEquals(null, $docA->get('/array/1'));
-        $this->assertEquals([(object) ['foo' => 'bar']], $docA->get('/arrayObject'));
-        $this->assertEquals('bar', $docA->get('/arrayObject/0/foo'));
-        $this->assertEquals(null, $docA->get('/arrayObject/0/bar'));
-        $this->assertEquals('bar', $docA->get('/object/foo'));
-        $this->assertEquals(null, $docA->get('/object/bar'));
+        $this->assertEquals('bar', $document->get('/string'));
+        $this->assertEquals(12, $document->get('/number'));
+        $this->assertEquals(false, $document->get('/boolean'));
+        $this->assertEquals(null, $document->get('/null'));
+        $this->assertEquals(['foo'], $document->get('/array'));
+        $this->assertEquals('foo', $document->get('/array/0'));
+        $this->assertEquals([(object) ['foo' => 'bar']], $document->get('/arrayObject'));
+        $this->assertEquals('bar', $document->get('/arrayObject/0/foo'));
+        $this->assertEquals('bar', $document->get('/object/foo'));
     }
-    
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testGetNotExists()
+    {
+        $document = Document::fromFile(__DIR__ . '/test_a.json');
+
+        $this->assertEquals(null, $document->get('/array/1'));
+    }
+
     public function testEquals()
     {
         $docA = Document::fromFile(__DIR__ . '/test_a.json');
