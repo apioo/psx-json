@@ -54,16 +54,31 @@ class Pointer
 
     public function evaluate($data)
     {
+        $path = [];
         foreach ($this->parts as $part) {
             if (is_array($data)) {
-                $data = isset($data[$part]) ? $data[$part] : null;
+                if (array_key_exists($part, $data)) {
+                    $data = $data[$part];
+                } else {
+                    throw new \InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $path));
+                }
             } elseif ($data instanceof \stdClass) {
-                $data = isset($data->$part) ? $data->$part : null;
+                if (property_exists($data, $part)) {
+                    $data = $data->$part;
+                } else {
+                    throw new \InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $path));
+                }
             } elseif ($data instanceof RecordInterface) {
-                $data = $data->getProperty($part);
+                if ($data->hasProperty($part)) {
+                    $data = $data->getProperty($part);
+                } else {
+                    throw new \InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $path));
+                }
             } else {
                 $data = null;
             }
+
+            $path[] = $part;
 
             if ($data === null) {
                 break;
