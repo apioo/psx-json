@@ -18,20 +18,20 @@
  * limitations under the License.
  */
 
-namespace PSX\Json\Tests\RPC;
+namespace PSX\Json\Tests\Rpc;
 
 use PHPUnit\Framework\TestCase;
-use PSX\Json\RPC\Builder;
-use PSX\Json\RPC\Exception\MethodNotFoundException;
+use PSX\Json\Rpc\Builder;
+use PSX\Json\Rpc\Exception\MethodNotFoundException;
 
 /**
- * ServerTest
+ * BuilderTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class ServerTest extends TestCase
+class BuilderTest extends TestCase
 {
     /**
      * @dataProvider callProvider

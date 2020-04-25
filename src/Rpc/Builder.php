@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace PSX\Json\RPC;
+namespace PSX\Json\Rpc;
 
 /**
  * Client

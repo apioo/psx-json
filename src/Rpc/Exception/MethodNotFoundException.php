@@ -18,15 +18,19 @@
  * limitations under the License.
  */
 
-namespace PSX\Json\RPC\Exception;
+namespace PSX\Json\Rpc\Exception;
 
 /**
- * ServerErrorException
+ * MethodNotFoundException
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class ServerErrorException extends \Exception
+class MethodNotFoundException extends ServerErrorException
 {
+    public function __construct($message = '', \Throwable $previous = null)
+    {
+        parent::__construct($message, -32601, $previous);
+    }
 }

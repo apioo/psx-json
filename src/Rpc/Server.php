@@ -18,9 +18,9 @@
  * limitations under the License.
  */
 
-namespace PSX\Json\RPC;
+namespace PSX\Json\Rpc;
 
-use PSX\Json\RPC\Exception\InvalidRequestException;
+use PSX\Json\Rpc\Exception\InvalidRequestException;
 
 /**
  * Simple JSON RPC server which accepts the decoded JSON payload and invokes the

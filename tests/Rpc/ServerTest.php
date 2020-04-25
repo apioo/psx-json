@@ -18,13 +18,13 @@
  * limitations under the License.
  */
 
-namespace PSX\Json\Tests\RPC;
+namespace PSX\Json\Tests\Rpc;
 
 use PHPUnit\Framework\TestCase;
-use PSX\Json\RPC\Exception\InvalidRequestException;
-use PSX\Json\RPC\Exception\MethodNotFoundException;
-use PSX\Json\RPC\Exception\ParseErrorException;
-use PSX\Json\RPC\Server;
+use PSX\Json\Rpc\Exception\InvalidRequestException;
+use PSX\Json\Rpc\Exception\MethodNotFoundException;
+use PSX\Json\Rpc\Exception\ParseErrorException;
+use PSX\Json\Rpc\Server;
 
 /**
  * ServerTest

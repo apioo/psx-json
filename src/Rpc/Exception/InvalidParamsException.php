@@ -18,21 +18,19 @@
  * limitations under the License.
  */
 
-namespace PSX\Json\RPC\Exception;
-
-use Throwable;
+namespace PSX\Json\Rpc\Exception;
 
 /**
- * ParseErrorException
+ * InvalidParamsException
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class ParseErrorException extends ServerErrorException
+class InvalidParamsException extends ServerErrorException
 {
-    public function __construct($message = '', Throwable $previous = null)
+    public function __construct($message = '', \Throwable $previous = null)
     {
-        parent::__construct($message, -32700, $previous);
+        parent::__construct($message, -32602, $previous);
     }
 }
