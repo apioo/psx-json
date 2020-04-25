@@ -4,9 +4,11 @@ PSX Json
 ## About
 
 Library which contains classes to handle JSON data. It implements the JSON patch
-and pointer specification. The following example shows the basic usage:
+and pointer specification and provides a simple JSON RPC server.
 
 ## Usage
+
+### Patch/Pointer
 
 ```php
 <?php
@@ -30,3 +32,28 @@ $document->patch([
 echo $document->toString();
 ```
 
+### RPC Server
+
+The following example shows a super simple JSON RPC server using the plain PHP.
+But it is also easy possible to integrate the server into an existing framework.
+
+```php
+<?php
+
+use PSX\Json\RPC\Server;
+use PSX\Json\RPC\Exception\MethodNotFoundException;
+
+$server = new Server(function($method, $arguments){
+    if ($method === 'sum') {
+        return array_sum($arguments);
+    } else {
+        throw new MethodNotFoundException('Method not found');
+    }
+});
+
+$return = $server->invoke(\json_decode(file_get_contents('php://input')));
+
+header('Content-Type: application/json');
+echo \json_encode($return, JSON_PRETTY_PRINT);
+
+```
