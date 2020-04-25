@@ -1,7 +1,7 @@
 {
   "name": "psx/json",
   "description": "Read and transform JSON documents through JSON-Patch/Pointer",
-  "keywords": ["json", "patch", "pointer"],
+  "keywords": ["json", "patch", "pointer", "json-rpc", "rpc"],
   "homepage": "http://phpsx.org",
   "license": "Apache-2.0",
   "authors": [
@@ -12,6 +12,7 @@
     }
   ],
   "require": {
+    "ext-json": "*",
     "php": ">=7.0",
     "psx/record": "^1.0"
   },
