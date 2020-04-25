@@ -46,21 +46,19 @@ class JsonTest extends TestCase
         $this->assertEquals(array('foo' => 'bar'), Parser::decode($val, true));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testJsonDecodeMalformed()
     {
+        $this->expectException(\RuntimeException::class);
+
         $val = '{"foo":"bar"';
 
         Parser::decode($val);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testJsonDecodeControlCharacter()
     {
+        $this->expectException(\RuntimeException::class);
+
         $val = '{"foo' . "\x02" . '":"bar"}';
 
         Parser::decode($val);

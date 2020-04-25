@@ -115,11 +115,10 @@ class WebSignatureTest extends TestCase
         $this->assertFalse($token->validate('secret'));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testValidateNoSignature()
     {
+        $this->expectException(\RuntimeException::class);
+
         $token = new WebSignature();
         $token->setHeader(WebSignature::TYPE, 'JWT');
         $token->setHeader(WebSignature::ALGORITHM, 'HS256');

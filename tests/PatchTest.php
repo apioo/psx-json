@@ -86,7 +86,7 @@ class PatchTest extends TestCase
                     $testCase->patch,
                     $expected,
                     $error,
-                    $testCase->comment ?? null,
+                    $testCase->comment ?? '',
                 ];
             }
         }

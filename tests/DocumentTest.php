@@ -47,11 +47,10 @@ class DocumentTest extends TestCase
         $this->assertEquals('bar', $document->get('/object/foo'));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testGetNotExists()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $document = Document::fromFile(__DIR__ . '/test_a.json');
 
         $this->assertEquals(null, $document->get('/array/1'));
