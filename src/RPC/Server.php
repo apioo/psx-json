@@ -87,7 +87,7 @@ class Server
 
     private function createResponse($result, $id)
     {
-        return [
+        return (object) [
             'jsonrpc' => self::VERSION,
             'result' => $result,
             'id' => $id,
@@ -96,16 +96,16 @@ class Server
 
     private function createError(\Throwable $e, $id)
     {
-        $error = [
+        $error = (object) [
             'code' => $e->getCode(),
             'message' => $e->getMessage(),
         ];
 
         if ($this->debug) {
-            $error['data'] = $e->getTraceAsString();
+            $error->data = $e->getTraceAsString();
         }
 
-        return [
+        return (object) [
             'jsonrpc' => self::VERSION,
             'error' => $error,
             'id' => $id,
