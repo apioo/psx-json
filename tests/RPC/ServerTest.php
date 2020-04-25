@@ -45,7 +45,7 @@ class ServerTest extends TestCase
 
         $this->assertJsonStringEqualsJsonString($expect, \json_encode($actual));
     }
-    
+
     public function invokeProvider()
     {
         return [
@@ -92,8 +92,8 @@ class ServerTest extends TestCase
                 }
             ],
             [
-                '{"jsonrpc": "2.0", "method": "foobar", "id": "1"}',
-                '{"jsonrpc": "2.0", "error": {"code": -32601, "message": "Method not found"}, "id": "1"}',
+                '{"jsonrpc": "2.0", "method": "foobar", "id": 1}',
+                '{"jsonrpc": "2.0", "error": {"code": -32601, "message": "Method not found"}, "id": 1}',
                 function($method, $arguments){
                     throw new MethodNotFoundException('Method not found');
                 }

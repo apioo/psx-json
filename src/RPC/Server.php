@@ -32,8 +32,6 @@ use PSX\Json\RPC\Exception\InvalidRequestException;
  */
 class Server
 {
-    private const VERSION = '2.0';
-
     /**
      * @var callable
      */
@@ -44,17 +42,23 @@ class Server
      */
     private $debug;
 
+    /**
+     * @var Builder
+     */
+    private $builder;
+
     public function __construct($callable, bool $debug = false)
     {
         $this->callable = $callable;
         $this->debug = $debug;
+        $this->builder = new Builder();
     }
 
     public function invoke($data)
     {
         if (is_array($data)) {
             if (count($data) === 0) {
-                return $this->createError(new InvalidRequestException('Invalid Request'), null);
+                return $this->builder->createError(new InvalidRequestException('Invalid Request'), null);
             }
 
             $result = [];
@@ -75,40 +79,13 @@ class Server
         $id = $data->id ?? null;
 
         if (empty($method)) {
-            return $this->createError(new InvalidRequestException('Invalid Request'), $id);
+            return $this->builder->createError(new InvalidRequestException('Invalid Request'), $id);
         }
 
         try {
-            return $this->createResponse(call_user_func_array($this->callable, [$method, $params]), $id);
+            return $this->builder->createResponse(call_user_func_array($this->callable, [$method, $params]), $id);
         } catch (\Throwable $e) {
-            return $this->createError($e, $id);
+            return $this->builder->createError($e, $id, $this->debug);
         }
-    }
-
-    private function createResponse($result, $id)
-    {
-        return (object) [
-            'jsonrpc' => self::VERSION,
-            'result' => $result,
-            'id' => $id,
-        ];
-    }
-
-    private function createError(\Throwable $e, $id)
-    {
-        $error = (object) [
-            'code' => $e->getCode(),
-            'message' => $e->getMessage(),
-        ];
-
-        if ($this->debug) {
-            $error->data = $e->getTraceAsString();
-        }
-
-        return (object) [
-            'jsonrpc' => self::VERSION,
-            'error' => $error,
-            'id' => $id,
-        ];
     }
 }
