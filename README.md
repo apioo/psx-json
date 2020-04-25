@@ -34,8 +34,8 @@ echo $document->toString();
 
 ### RPC Server
 
-The following example shows a super simple JSON RPC server using the plain PHP.
-But it is also easy possible to integrate the server into an existing framework.
+The following example shows a super simple JSON RPC server using plain PHP.
+It is also easy possible to integrate the server into any existing framework.
 
 ```php
 <?php
