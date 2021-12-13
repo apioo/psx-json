@@ -33,26 +33,26 @@ use PSX\Record\RecordInterface;
  */
 class Pointer
 {
-    protected $path;
-    protected $parts;
+    private string $path;
+    private array $parts;
 
-    public function __construct($path)
+    public function __construct(string $path)
     {
         $this->path  = $path;
         $this->parts = $this->parsePointer($path);
     }
 
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
 
-    public function getParts()
+    public function getParts(): array
     {
         return $this->parts;
     }
 
-    public function evaluate($data)
+    public function evaluate(mixed $data): mixed
     {
         $path = [];
         foreach ($this->parts as $part) {
@@ -88,7 +88,7 @@ class Pointer
         return $data;
     }
 
-    private function parsePointer($path)
+    private function parsePointer(string $path): array
     {
         if (empty($path)) {
             return [];

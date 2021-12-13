@@ -35,7 +35,7 @@ use PSX\Record\RecordInterface;
  */
 class Patch
 {
-    protected $operations;
+    private array $operations;
 
     public function __construct(array $operations)
     {
@@ -45,10 +45,10 @@ class Patch
     public function patch($data)
     {
         foreach ($this->operations as $operation) {
-            $op    = isset($operation->op)    ? $operation->op    : null;
-            $path  = isset($operation->path)  ? $operation->path  : null;
-            $value = isset($operation->value) ? $operation->value : null;
-            $from  = isset($operation->from)  ? $operation->from  : null;
+            $op    = $operation->op ?? null;
+            $path  = $operation->path ?? null;
+            $value = $operation->value ?? null;
+            $from  = $operation->from ?? null;
 
             switch ($op) {
                 case 'add':

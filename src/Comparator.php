@@ -37,11 +37,8 @@ class Comparator
      * elements in objects does not matter
      *
      * @see https://tools.ietf.org/html/rfc6902#section-4.6
-     * @param mixed $left
-     * @param mixed $right
-     * @return boolean
      */
-    public static function compare($left, $right)
+    public static function compare(mixed $left, mixed $right): bool
     {
         if (self::isContainer($left) && self::isContainer($right)) {
             $leftFields  = self::normalize($left);
@@ -67,12 +64,12 @@ class Comparator
         }
     }
 
-    protected static function isContainer($data)
+    protected static function isContainer($data): bool
     {
         return is_array($data) || $data instanceof \stdClass || $data instanceof RecordInterface;
     }
 
-    protected static function normalize($data)
+    protected static function normalize($data): ?array
     {
         if (is_array($data)) {
             return $data;

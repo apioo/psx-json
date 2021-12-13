@@ -32,29 +32,18 @@ use PSX\Json\Rpc\Exception\InvalidRequestException;
  */
 class Server
 {
-    /**
-     * @var callable
-     */
-    private $callable;
+    private \Closure $callable;
+    private bool $debug;
+    private Builder $builder;
 
-    /**
-     * @var bool
-     */
-    private $debug;
-
-    /**
-     * @var Builder
-     */
-    private $builder;
-
-    public function __construct($callable, bool $debug = false)
+    public function __construct(\Closure $callable, bool $debug = false)
     {
         $this->callable = $callable;
         $this->debug = $debug;
         $this->builder = new Builder();
     }
 
-    public function invoke($data)
+    public function invoke($data): object|array
     {
         if (is_array($data)) {
             if (count($data) === 0) {
@@ -72,7 +61,7 @@ class Server
         }
     }
 
-    private function execute($data)
+    private function execute($data): object
     {
         $method = $data->method ?? null;
         $params = $data->params ?? null;

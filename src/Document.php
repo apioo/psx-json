@@ -35,11 +35,8 @@ class Document extends Record
     /**
      * Resolves the provided json pointer to an element in the document or 
      * returns null if the element does not exist
-     * 
-     * @param string $pointer
-     * @return mixed|null
      */
-    public function get($pointer)
+    public function get(string $pointer): mixed
     {
         $pointer = new Pointer($pointer);
         $data    = $pointer->evaluate($this->_properties);
@@ -49,19 +46,14 @@ class Document extends Record
 
     /**
      * Checks whether this document is equal to the provided document
-     * 
-     * @param mixed $document
-     * @return bool
      */
-    public function equals($document)
+    public function equals(mixed $document): bool
     {
         return Comparator::compare($this, $document);
     }
 
     /**
      * Executes patch operations on this document
-     * 
-     * @param array $operations
      */
     public function patch(array $operations)
     {
@@ -73,28 +65,18 @@ class Document extends Record
 
     /**
      * Returns this document as json encoded string
-     * 
-     * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         return Parser::encode($this->_properties);
     }
 
-    /**
-     * @param string $file
-     * @return \PSX\Json\Document
-     */
-    public static function fromFile($file)
+    public static function fromFile(string $file): Document
     {
         return self::fromJson(file_get_contents($file));
     }
 
-    /**
-     * @param string $json
-     * @return \PSX\Json\Document
-     */
-    public static function fromJson($json)
+    public static function fromJson(string $json): Document
     {
         if (empty($json)) {
             throw new InvalidArgumentException('Provided JSON string must not be empty');

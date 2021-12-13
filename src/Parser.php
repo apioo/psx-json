@@ -36,12 +36,8 @@ class Parser
 {
     /**
      * Returns the json encoded value as string of $value
-     *
-     * @param mixed $value
-     * @param integer $options
-     * @return string
      */
-    public static function encode($value, $options = 0)
+    public static function encode(mixed $value, int $options = 0): string
     {
         return json_encode($value, $options);
     }
@@ -50,29 +46,10 @@ class Parser
      * Returns a php variable from the json decoded value. Throws an exception
      * if decoding the data is not possible
      *
-     * @param string $value
-     * @param boolean $assoc
-     * @return mixed
+     * @throws \JsonException
      */
-    public static function decode($value, $assoc = false)
+    public static function decode(string $value, bool $assoc = false): mixed
     {
-        $data = json_decode((string) $value, $assoc);
-
-        switch (json_last_error()) {
-            case JSON_ERROR_NONE:
-                return $data;
-                break;
-
-            case JSON_ERROR_DEPTH:
-                throw new \RuntimeException('Invalid JSON structure');
-                break;
-
-            case JSON_ERROR_STATE_MISMATCH:
-            case JSON_ERROR_CTRL_CHAR:
-            case JSON_ERROR_SYNTAX:
-            default:
-                throw new \RuntimeException('Syntax error, malformed JSON');
-                break;
-        }
+        return json_decode($value, $assoc, 512, JSON_THROW_ON_ERROR);
     }
 }
