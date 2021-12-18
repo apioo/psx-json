@@ -48,7 +48,7 @@ class JsonTest extends TestCase
 
     public function testJsonDecodeMalformed()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(\JsonException::class);
 
         $val = '{"foo":"bar"';
 
@@ -57,7 +57,7 @@ class JsonTest extends TestCase
 
     public function testJsonDecodeControlCharacter()
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(\JsonException::class);
 
         $val = '{"foo' . "\x02" . '":"bar"}';
 
