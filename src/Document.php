@@ -38,10 +38,7 @@ class Document extends Record
      */
     public function get(string $pointer): mixed
     {
-        $pointer = new Pointer($pointer);
-        $data    = $pointer->evaluate($this->_properties);
-
-        return $data;
+        return (new Pointer($pointer))->evaluate($this->properties);
     }
 
     /**
@@ -57,10 +54,7 @@ class Document extends Record
      */
     public function patch(array $operations)
     {
-        $patch = new Patch($operations);
-        $data  = $patch->patch($this->_properties);
-
-        $this->_properties = $data;
+        $this->properties = (new Patch($operations))->patch($this->properties);
     }
 
     /**
@@ -68,20 +62,26 @@ class Document extends Record
      */
     public function toString(): string
     {
-        return Parser::encode($this->_properties);
+        return Parser::encode($this->properties);
     }
 
+    /**
+     * @throws \JsonException
+     */
     public static function fromFile(string $file): Document
     {
         return self::fromJson(file_get_contents($file));
     }
 
+    /**
+     * @throws \JsonException
+     */
     public static function fromJson(string $json): Document
     {
         if (empty($json)) {
             throw new InvalidArgumentException('Provided JSON string must not be empty');
         }
 
-        return self::fromStdClass(Parser::decode($json));
+        return self::from(Parser::decode($json));
     }
 }
