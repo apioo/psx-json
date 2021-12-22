@@ -20,7 +20,7 @@
 
 namespace PSX\Json;
 
-use InvalidArgumentException;
+use PSX\Json\Exception\PatchException;
 use PSX\Record\RecordInterface;
 
 /**
@@ -42,6 +42,9 @@ class Patch
         $this->operations = $operations;
     }
 
+    /**
+     * @throws PatchException
+     */
     public function patch($data)
     {
         foreach ($this->operations as $operation) {
@@ -55,7 +58,7 @@ class Patch
                 case 'append':
                 case 'replace':
                     if (!property_exists($operation, 'value')) {
-                        throw new InvalidArgumentException('Value not available');
+                        throw new PatchException('Value not available');
                     }
 
                     $pointer = new Pointer($path);
@@ -69,20 +72,20 @@ class Patch
 
                 case 'test':
                     if (!property_exists($operation, 'value')) {
-                        throw new InvalidArgumentException('Value not available');
+                        throw new PatchException('Value not available');
                     }
 
                     $pointer = new Pointer($path);
                     $actual  = $pointer->evaluate($data);
 
                     if (!Comparator::compare($value, $actual)) {
-                        throw new InvalidArgumentException('Test value is different');
+                        throw new PatchException('Test value is different');
                     }
                     break;
 
                 case 'copy':
                     if (!property_exists($operation, 'from')) {
-                        throw new InvalidArgumentException('From not available');
+                        throw new PatchException('From not available');
                     }
 
                     $pointer = new Pointer($from);
@@ -94,7 +97,7 @@ class Patch
 
                 case 'move':
                     if (!property_exists($operation, 'from')) {
-                        throw new InvalidArgumentException('From not available');
+                        throw new PatchException('From not available');
                     }
 
                     $pointer = new Pointer($from);
@@ -106,14 +109,16 @@ class Patch
                     break;
 
                 default:
-                    throw new InvalidArgumentException('Invalid operator');
-                    break;
+                    throw new PatchException('Invalid operator');
             }
         }
 
         return $data;
     }
 
+    /**
+     * @throws PatchException
+     */
     protected function doOperation($data, array $parts, $op, $path, $value)
     {
         if (count($parts) == 0) {
@@ -129,22 +134,22 @@ class Patch
                 if (array_key_exists($part, $data)) {
                     $data[$part] = $this->doOperation($data[$part], $parts, $op, $path, $value);
                 } else {
-                    throw new InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
+                    throw new PatchException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
                 }
             } elseif ($data instanceof \stdClass) {
                 if (property_exists($data, $part)) {
                     $data->$part = $this->doOperation($data->$part, $parts, $op, $path, $value);
                 } else {
-                    throw new InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
+                    throw new PatchException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
                 }
             } elseif ($data instanceof RecordInterface) {
                 if ($data->hasProperty($part)) {
                     $data->setProperty($part, $this->doOperation($data->getProperty($part), $parts, $op, $path, $value));
                 } else {
-                    throw new InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
+                    throw new PatchException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
                 }
             } else {
-                throw new InvalidArgumentException('Invalid path ' . $path);
+                throw new PatchException('Invalid path ' . $path);
             }
 
             return $data;
@@ -160,7 +165,7 @@ class Patch
                         if ($index >= 0 && $index <= count($data)) {
                             array_splice($data, $index, 0, [$value]);
                         } else {
-                            throw new InvalidArgumentException('Key ' . $index . ' does not exist at /' . implode('/', $parts));
+                            throw new PatchException('Key ' . $index . ' does not exist at /' . implode('/', $parts));
                         }
                     }
                 } elseif ($op == 'replace') {
@@ -172,11 +177,11 @@ class Patch
                         unset($data[$part]);
                         $data = array_values($data);
                     } else {
-                        throw new InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
+                        throw new PatchException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
                     }
                 }
             } else {
-                throw new InvalidArgumentException('Invalid key at /' . implode('/', $parts));
+                throw new PatchException('Invalid key at /' . implode('/', $parts));
             }
         } elseif ($data instanceof \stdClass) {
             if ($part !== '') {
@@ -190,7 +195,7 @@ class Patch
                     if (property_exists($data, $part)) {
                         unset($data->$part);
                     } else {
-                        throw new InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
+                        throw new PatchException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
                     }
                 }
             }
@@ -206,7 +211,7 @@ class Patch
                     if ($data->hasProperty($part)) {
                         $data->removeProperty($part);
                     } else {
-                        throw new InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
+                        throw new PatchException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
                     }
                 }
             }

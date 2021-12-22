@@ -20,7 +20,7 @@
 
 namespace PSX\Json;
 
-use InvalidArgumentException;
+use PSX\Json\Exception\PointerException;
 use PSX\Record\RecordInterface;
 
 /**
@@ -52,6 +52,9 @@ class Pointer
         return $this->parts;
     }
 
+    /**
+     * @throws PointerException
+     */
     public function evaluate(mixed $data): mixed
     {
         $path = [];
@@ -60,19 +63,19 @@ class Pointer
                 if (array_key_exists($part, $data)) {
                     $data = $data[$part];
                 } else {
-                    throw new \InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $path));
+                    throw new PointerException('Property ' . $part . ' does not exist at /' . implode('/', $path));
                 }
             } elseif ($data instanceof \stdClass) {
                 if (property_exists($data, $part)) {
                     $data = $data->$part;
                 } else {
-                    throw new \InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $path));
+                    throw new PointerException('Property ' . $part . ' does not exist at /' . implode('/', $path));
                 }
             } elseif ($data instanceof RecordInterface) {
                 if ($data->hasProperty($part)) {
                     $data = $data->getProperty($part);
                 } else {
-                    throw new \InvalidArgumentException('Property ' . $part . ' does not exist at /' . implode('/', $path));
+                    throw new PointerException('Property ' . $part . ' does not exist at /' . implode('/', $path));
                 }
             } else {
                 $data = null;
@@ -88,6 +91,9 @@ class Pointer
         return $data;
     }
 
+    /**
+     * @throws PointerException
+     */
     private function parsePointer(string $path): array
     {
         if (empty($path)) {
@@ -98,7 +104,7 @@ class Pointer
         $parts = explode('/', $path);
 
         if (array_shift($parts) !== '') {
-            throw new InvalidArgumentException('Pointer must start with a /');
+            throw new PointerException('Pointer must start with a /');
         }
 
         return array_map(function ($value) {

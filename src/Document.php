@@ -33,8 +33,10 @@ use PSX\Record\Record;
 class Document extends Record
 {
     /**
-     * Resolves the provided json pointer to an element in the document or 
+     * Resolves the provided json pointer to an element in the document or
      * returns null if the element does not exist
+     *
+     * @throws Exception\PointerException
      */
     public function get(string $pointer): mixed
     {
@@ -51,6 +53,8 @@ class Document extends Record
 
     /**
      * Executes patch operations on this document
+     *
+     * @throws Exception\PatchException
      */
     public function patch(array $operations)
     {
