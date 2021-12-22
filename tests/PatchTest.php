@@ -21,6 +21,7 @@
 namespace PSX\Json\Tests;
 
 use PHPUnit\Framework\TestCase;
+use PSX\Json\Exception\JsonException;
 use PSX\Json\Patch;
 
 /**
@@ -56,7 +57,7 @@ class PatchTest extends TestCase
      */
     public function testPatchError($doc, $patch, $expected, $error, $comment)
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(JsonException::class);
 
         (new Patch($patch))->patch($doc);
     }

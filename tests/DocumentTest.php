@@ -22,6 +22,7 @@ namespace PSX\Json\Tests;
 
 use PHPUnit\Framework\TestCase;
 use PSX\Json\Document;
+use PSX\Json\Exception\PointerException;
 
 /**
  * DocumentTest
@@ -49,7 +50,7 @@ class DocumentTest extends TestCase
 
     public function testGetNotExists()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(PointerException::class);
 
         $document = Document::fromFile(__DIR__ . '/test_a.json');
 
