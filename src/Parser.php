@@ -52,4 +52,20 @@ class Parser
     {
         return json_decode($value, $assoc, 512, JSON_THROW_ON_ERROR);
     }
+
+    /**
+     * @throws \JsonException
+     */
+    public static function decodeAsArray(string $value): array
+    {
+        return self::decode($value, true);
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    public static function decodeAsObject(string $value): object
+    {
+        return self::decode($value, false);
+    }
 }

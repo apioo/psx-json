@@ -34,7 +34,7 @@ class JsonTest extends TestCase
 {
     public function testJsonEncode()
     {
-        $val = array('foo' => 'bar');
+        $val = ['foo' => 'bar'];
 
         $this->assertJsonStringEqualsJsonString('{"foo":"bar"}', Parser::encode($val));
     }
@@ -43,7 +43,21 @@ class JsonTest extends TestCase
     {
         $val = '{"foo":"bar"}';
 
-        $this->assertEquals(array('foo' => 'bar'), Parser::decode($val, true));
+        $this->assertEquals(['foo' => 'bar'], Parser::decode($val, true));
+    }
+
+    public function testJsonDecodeAsArray()
+    {
+        $val = '{"foo":"bar"}';
+
+        $this->assertEquals(['foo' => 'bar'], Parser::decodeAsArray($val));
+    }
+
+    public function testJsonDecodeAsObject()
+    {
+        $val = '{"foo":"bar"}';
+
+        $this->assertEquals((object) ['foo' => 'bar'], Parser::decodeAsObject($val));
     }
 
     public function testJsonDecodeMalformed()
