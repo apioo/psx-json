@@ -14,10 +14,10 @@
   "require": {
     "ext-json": "*",
     "php": ">=8.0",
-    "psx/record": "^2.0"
+    "psx/record": "^3.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^8.0",
+    "phpunit/phpunit": "^9.0",
     "vimeo/psalm": "^4.0"
   },
   "autoload": {
