@@ -41,8 +41,8 @@ class Comparator
     public static function compare(mixed $left, mixed $right): bool
     {
         if (self::isContainer($left) && self::isContainer($right)) {
-            $leftFields  = self::normalize($left);
-            $rightFields = self::normalize($right);
+            $leftFields  = self::normalize($left) ?? [];
+            $rightFields = self::normalize($right) ?? [];
 
             if (count($leftFields) !== count($rightFields)) {
                 return false;
@@ -76,7 +76,7 @@ class Comparator
         } elseif ($data instanceof \stdClass) {
             return (array) $data;
         } elseif ($data instanceof RecordInterface) {
-            return $data->getProperties();
+            return $data->getAll();
         } else {
             return null;
         }

@@ -29,16 +29,19 @@ use PSX\Record\Record;
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
+ * @template T
+ * @extends \PSX\Record\Record<T>
+ * @psalm-consistent-constructor
+ * @psalm-consistent-templates
  */
 class Document extends Record
 {
     /**
-     * Resolves the provided json pointer to an element in the document or
-     * returns null if the element does not exist
+     * Resolves the provided json pointer to an element in the document or returns null if the element does not exist
      *
      * @throws Exception\PointerException
      */
-    public function get(string $pointer): mixed
+    public function point(string $pointer): mixed
     {
         return (new Pointer($pointer))->evaluate($this->properties);
     }
@@ -72,7 +75,7 @@ class Document extends Record
     /**
      * @throws \JsonException
      */
-    public static function fromFile(string $file): Document
+    public static function fromFile(string $file): self
     {
         return self::fromJson(file_get_contents($file));
     }
@@ -80,7 +83,7 @@ class Document extends Record
     /**
      * @throws \JsonException
      */
-    public static function fromJson(string $json): Document
+    public static function fromJson(string $json): self
     {
         if (empty($json)) {
             throw new InvalidArgumentException('Provided JSON string must not be empty');

@@ -72,8 +72,8 @@ class Pointer
                     throw new PointerException('Property ' . $part . ' does not exist at /' . implode('/', $path));
                 }
             } elseif ($data instanceof RecordInterface) {
-                if ($data->hasProperty($part)) {
-                    $data = $data->getProperty($part);
+                if ($data->containsKey($part)) {
+                    $data = $data->get($part);
                 } else {
                     throw new PointerException('Property ' . $part . ' does not exist at /' . implode('/', $path));
                 }

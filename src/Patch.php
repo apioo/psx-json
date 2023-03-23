@@ -61,12 +61,12 @@ class Patch
                         throw new PatchException('Value not available');
                     }
 
-                    $pointer = new Pointer($path);
+                    $pointer = new Pointer($path ?? '');
                     $data    = $this->doOperation($data, $pointer->getParts(), $op, $path, $value);
                     break;
 
                 case 'remove':
-                    $pointer = new Pointer($path);
+                    $pointer = new Pointer($path ?? '');
                     $data    = $this->doOperation($data, $pointer->getParts(), $op, $path, null);
                     break;
 
@@ -75,7 +75,7 @@ class Patch
                         throw new PatchException('Value not available');
                     }
 
-                    $pointer = new Pointer($path);
+                    $pointer = new Pointer($path ?? '');
                     $actual  = $pointer->evaluate($data);
 
                     if (!Comparator::compare($value, $actual)) {
@@ -88,10 +88,10 @@ class Patch
                         throw new PatchException('From not available');
                     }
 
-                    $pointer = new Pointer($from);
+                    $pointer = new Pointer($from ?? '');
                     $value   = $pointer->evaluate($data);
 
-                    $pointer = new Pointer($path);
+                    $pointer = new Pointer($path ?? '');
                     $data    = $this->doOperation($data, $pointer->getParts(), 'add', $path, $value);
                     break;
 
@@ -100,11 +100,11 @@ class Patch
                         throw new PatchException('From not available');
                     }
 
-                    $pointer = new Pointer($from);
+                    $pointer = new Pointer($from ?? '');
                     $value   = $pointer->evaluate($data);
                     $data    = $this->doOperation($data, $pointer->getParts(), 'remove', $path, null);
                     
-                    $pointer = new Pointer($path);
+                    $pointer = new Pointer($path ?? '');
                     $data    = $this->doOperation($data, $pointer->getParts(), 'add', $path, $value);
                     break;
 
@@ -143,8 +143,8 @@ class Patch
                     throw new PatchException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
                 }
             } elseif ($data instanceof RecordInterface) {
-                if ($data->hasProperty($part)) {
-                    $data->setProperty($part, $this->doOperation($data->getProperty($part), $parts, $op, $path, $value));
+                if ($data->containsKey($part)) {
+                    $data->put($part, $this->doOperation($data->get($part), $parts, $op, $path, $value));
                 } else {
                     throw new PatchException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
                 }
@@ -202,14 +202,14 @@ class Patch
         } elseif ($data instanceof RecordInterface) {
             if ($part !== '') {
                 if ($op == 'add' || $op == 'append') {
-                    $data->setProperty($part, $value);
+                    $data->put($part, $value);
                 } elseif ($op == 'replace') {
-                    if ($data->hasProperty($part)) {
-                        $data->setProperty($part, $value);
+                    if ($data->containsKey($part)) {
+                        $data->put($part, $value);
                     }
                 } elseif ($op == 'remove') {
-                    if ($data->hasProperty($part)) {
-                        $data->removeProperty($part);
+                    if ($data->containsKey($part)) {
+                        $data->remove($part);
                     } else {
                         throw new PatchException('Property ' . $part . ' does not exist at /' . implode('/', $parts));
                     }
