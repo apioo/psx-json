@@ -33,34 +33,34 @@ use PSX\Json\Exception\PointerException;
  */
 class DocumentTest extends TestCase
 {
-    public function testGet()
+    public function testPointer()
     {
-        $document = Document::fromFile(__DIR__ . '/test_a.json');
+        $document = $this->fromFile(__DIR__ . '/test_a.json');
 
-        $this->assertEquals('bar', $document->get('/string'));
-        $this->assertEquals(12, $document->get('/number'));
-        $this->assertEquals(false, $document->get('/boolean'));
-        $this->assertEquals(null, $document->get('/null'));
-        $this->assertEquals(['foo'], $document->get('/array'));
-        $this->assertEquals('foo', $document->get('/array/0'));
-        $this->assertEquals([(object) ['foo' => 'bar']], $document->get('/arrayObject'));
-        $this->assertEquals('bar', $document->get('/arrayObject/0/foo'));
-        $this->assertEquals('bar', $document->get('/object/foo'));
+        $this->assertEquals('bar', $document->pointer('/string'));
+        $this->assertEquals(12, $document->pointer('/number'));
+        $this->assertEquals(false, $document->pointer('/boolean'));
+        $this->assertEquals(null, $document->pointer('/null'));
+        $this->assertEquals(['foo'], $document->pointer('/array'));
+        $this->assertEquals('foo', $document->pointer('/array/0'));
+        $this->assertEquals([(object) ['foo' => 'bar']], $document->pointer('/arrayObject'));
+        $this->assertEquals('bar', $document->pointer('/arrayObject/0/foo'));
+        $this->assertEquals('bar', $document->pointer('/object/foo'));
     }
 
-    public function testGetNotExists()
+    public function testPointerNotExists()
     {
         $this->expectException(PointerException::class);
 
-        $document = Document::fromFile(__DIR__ . '/test_a.json');
+        $document = $this->fromFile(__DIR__ . '/test_a.json');
 
-        $this->assertEquals(null, $document->get('/array/1'));
+        $this->assertEquals(null, $document->pointer('/array/1'));
     }
 
     public function testEquals()
     {
-        $docA = Document::fromFile(__DIR__ . '/test_a.json');
-        $docB = Document::fromFile(__DIR__ . '/test_b.json');
+        $docA = $this->fromFile(__DIR__ . '/test_a.json');
+        $docB = $this->fromFile(__DIR__ . '/test_b.json');
 
         $this->assertFalse($docA->equals($docB));
         $this->assertTrue($docA->equals($docA));
@@ -68,21 +68,26 @@ class DocumentTest extends TestCase
 
     public function testPatch()
     {
-        $docA = Document::fromFile(__DIR__ . '/test_a.json');
+        $docA = $this->fromFile(__DIR__ . '/test_a.json');
         $docA->patch([
             (object) ['op' => 'add', 'path' => '/array/-', 'value' => 'bar'],
             (object) ['op' => 'add', 'path' => '/object/bar', 'value' => 'bar'],
         ]);
 
-        $this->assertEquals(['foo', 'bar'], $docA->get('/array'));
-        $this->assertEquals((object) ['foo' => 'bar', 'bar' => 'bar'], $docA->get('/object'));
+        $this->assertEquals(['foo', 'bar'], $docA->pointer('/array'));
+        $this->assertEquals((object) ['foo' => 'bar', 'bar' => 'bar'], $docA->pointer('/object'));
     }
 
     public function testToString()
     {
-        $docA   = Document::fromFile(__DIR__ . '/test_a.json');
+        $docA   = $this->fromFile(__DIR__ . '/test_a.json');
         $expect = file_get_contents(__DIR__ . '/test_a.json');
 
         $this->assertJsonStringEqualsJsonString($expect, $docA->toString());
+    }
+
+    private function fromFile(string $file): Document
+    {
+        return Document::from(json_decode(file_get_contents($file)));
     }
 }

@@ -41,7 +41,7 @@ class Document extends Record
      *
      * @throws Exception\PointerException
      */
-    public function point(string $pointer): mixed
+    public function pointer(string $pointer): mixed
     {
         return (new Pointer($pointer))->evaluate($this->properties);
     }
@@ -70,25 +70,5 @@ class Document extends Record
     public function toString(): string
     {
         return Parser::encode($this->properties);
-    }
-
-    /**
-     * @throws \JsonException
-     */
-    public static function fromFile(string $file): self
-    {
-        return self::fromJson(file_get_contents($file));
-    }
-
-    /**
-     * @throws \JsonException
-     */
-    public static function fromJson(string $json): self
-    {
-        if (empty($json)) {
-            throw new InvalidArgumentException('Provided JSON string must not be empty');
-        }
-
-        return self::from(Parser::decode($json));
     }
 }

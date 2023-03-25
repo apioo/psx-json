@@ -13,12 +13,12 @@ and pointer specification and provides a simple JSON RPC server.
 ```php
 <?php
 
-$document = Document::fromFile('/test.json');
+$document = Document::from(\json_decode(\file_get_contents('/test.json')));
 // or
-$document = Document::fromJson('{"author": {"name": "foo"}}');
+$document = Document::from(\json_decode('{"author": {"name": "foo"}}'));
 
 // get a value through a json pointer
-$name = $document->get('/author/name');
+$name = $document->pointer('/author/name');
 
 // compare whether this document is equal to another document
 $document->equals(['foo' => 'bar']);
