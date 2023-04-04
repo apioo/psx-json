@@ -24,19 +24,20 @@ use PHPUnit\Framework\TestCase;
 use PSX\Json\Parser;
 
 /**
- * JsonTest
+ * ParserTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class JsonTest extends TestCase
+class ParserTest extends TestCase
 {
     public function testJsonEncode()
     {
-        $val = ['foo' => 'bar'];
+        $actual = Parser::encode(['foo' => 'bar', 'test' => self::class, 'path' => '/population']);
+        $expect = '{"foo": "bar", "test": "PSX\\\\Json\\\\Tests\\\\ParserTest", "path": "/population"}';
 
-        $this->assertJsonStringEqualsJsonString('{"foo":"bar"}', Parser::encode($val));
+        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
     public function testJsonDecode()

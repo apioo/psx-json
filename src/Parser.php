@@ -21,10 +21,9 @@
 namespace PSX\Json;
 
 /**
- * This class is a wrapper to the json_encode / json_decode functions. Here an
- * simple example howto use it.
+ * This class is a wrapper to the json_encode / json_decode functions. Here a simple example howto use it.
  * <code>
- * $json = Parser::encode(array('foo' => 'bar'));
+ * $json = Parser::encode(['foo' => 'bar']);
  * $php  = Parser::decode($json);
  * </code>
  *
@@ -36,10 +35,12 @@ class Parser
 {
     /**
      * Returns the json encoded value as string of $value
+     *
+     * @throws \JsonException
      */
-    public static function encode(mixed $value, int $options = 0): string
+    public static function encode(mixed $value, ?int $options = null): string
     {
-        return json_encode($value, $options);
+        return json_encode($value, $options ?? JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     /**
