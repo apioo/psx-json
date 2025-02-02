@@ -40,7 +40,12 @@ class Parser
      */
     public static function encode(mixed $value, ?int $options = null): string
     {
-        return json_encode($value, $options ?? JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $return = json_encode($value, $options ?? JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if ($return === false) {
+            throw new \JsonException('Could not encode JSON');
+        }
+
+        return $return;
     }
 
     /**
@@ -51,7 +56,12 @@ class Parser
      */
     public static function decode(string $value, bool $assoc = false): mixed
     {
-        return json_decode($value, $assoc, 512, JSON_THROW_ON_ERROR);
+        $return = json_decode($value, $assoc, 512, JSON_THROW_ON_ERROR);
+        if ($return === false) {
+            throw new \JsonException('Could not decode JSON');
+        }
+
+        return $return;
     }
 
     /**

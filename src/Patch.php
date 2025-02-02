@@ -127,7 +127,7 @@ class Patch
             }
         }
 
-        $part = array_shift($parts);
+        $part = array_shift($parts) ?? '';
 
         if (count($parts) > 0) {
             if (is_array($data)) {
@@ -156,9 +156,9 @@ class Patch
         }
 
         if (is_array($data)) {
-            if ($part == '-' || preg_match('/^(0|[1-9][0-9]*)$/', $part)) {
-                if ($op == 'add' || $op == 'append') {
-                    if ($part == '-') {
+            if ($part === '-' || preg_match('/^(0|[1-9][0-9]*)$/', $part)) {
+                if ($op === 'add' || $op === 'append') {
+                    if ($part === '-') {
                         $data[] = $value;
                     } else {
                         $index = intval($part);
@@ -168,11 +168,11 @@ class Patch
                             throw new PatchException('Key ' . $index . ' does not exist at /' . implode('/', $parts));
                         }
                     }
-                } elseif ($op == 'replace') {
+                } elseif ($op === 'replace') {
                     if (array_key_exists($part, $data)) {
                         $data[$part] = $value;
                     }
-                } elseif ($op == 'remove') {
+                } elseif ($op === 'remove') {
                     if (array_key_exists($part, $data)) {
                         unset($data[$part]);
                         $data = array_values($data);
@@ -185,13 +185,13 @@ class Patch
             }
         } elseif ($data instanceof \stdClass) {
             if ($part !== '') {
-                if ($op == 'add' || $op == 'append') {
+                if ($op === 'add' || $op === 'append') {
                     $data->$part = $value;
-                } elseif ($op == 'replace') {
+                } elseif ($op === 'replace') {
                     if (property_exists($data, $part)) {
                         $data->$part = $value;
                     }
-                } elseif ($op == 'remove') {
+                } elseif ($op === 'remove') {
                     if (property_exists($data, $part)) {
                         unset($data->$part);
                     } else {
@@ -201,13 +201,13 @@ class Patch
             }
         } elseif ($data instanceof RecordInterface) {
             if ($part !== '') {
-                if ($op == 'add' || $op == 'append') {
+                if ($op === 'add' || $op === 'append') {
                     $data->put($part, $value);
-                } elseif ($op == 'replace') {
+                } elseif ($op === 'replace') {
                     if ($data->containsKey($part)) {
                         $data->put($part, $value);
                     }
-                } elseif ($op == 'remove') {
+                } elseif ($op === 'remove') {
                     if ($data->containsKey($part)) {
                         $data->remove($part);
                     } else {
