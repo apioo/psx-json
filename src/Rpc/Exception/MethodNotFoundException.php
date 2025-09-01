@@ -20,6 +20,8 @@
 
 namespace PSX\Json\Rpc\Exception;
 
+use Throwable;
+
 /**
  * MethodNotFoundException
  *
@@ -29,7 +31,7 @@ namespace PSX\Json\Rpc\Exception;
  */
 class MethodNotFoundException extends ServerErrorException
 {
-    public function __construct($message = '', \Throwable $previous = null)
+    public function __construct(string $message = '', ?Throwable $previous = null)
     {
         parent::__construct($message, -32601, $previous);
     }

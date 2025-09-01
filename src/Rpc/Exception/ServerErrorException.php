@@ -20,6 +20,8 @@
 
 namespace PSX\Json\Rpc\Exception;
 
+use Exception;
+
 /**
  * ServerErrorException
  *
@@ -27,6 +29,6 @@ namespace PSX\Json\Rpc\Exception;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://phpsx.org
  */
-class ServerErrorException extends \Exception
+class ServerErrorException extends Exception
 {
 }
