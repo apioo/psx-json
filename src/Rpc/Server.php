@@ -20,7 +20,10 @@
 
 namespace PSX\Json\Rpc;
 
+use Closure;
 use PSX\Json\Rpc\Exception\InvalidRequestException;
+use stdClass;
+use Throwable;
 
 /**
  * Simple JSON RPC server which accepts the decoded JSON payload and invokes the
@@ -32,49 +35,86 @@ use PSX\Json\Rpc\Exception\InvalidRequestException;
  */
 class Server
 {
-    private \Closure $callable;
+    private Closure $callable;
     private bool $debug;
     private Builder $builder;
 
-    public function __construct(\Closure $callable, bool $debug = false)
+    public function __construct(Closure $callable, bool $debug = false)
     {
         $this->callable = $callable;
         $this->debug = $debug;
         $this->builder = new Builder();
     }
 
-    public function invoke($data): object|array
+    public function invoke(mixed $data): object|array
     {
-        if (is_array($data)) {
-            if (count($data) === 0) {
-                return $this->builder->createError(new InvalidRequestException('Invalid Request'), null);
-            }
+        try {
+            if (is_array($data)) {
+                if (count($data) === 0) {
+                    throw new InvalidRequestException('Provided no values for batch request');
+                }
 
-            $result = [];
-            foreach ($data as $row) {
-                $result[] = $this->execute($row);
-            }
+                $result = [];
+                foreach ($data as $row) {
+                    $result[] = $this->execute($row);
+                }
 
-            return $result;
-        } else {
-            return $this->execute($data);
+                return $result;
+            } else if ($data instanceof stdClass) {
+                return $this->execute($data);
+            } else {
+                throw new InvalidRequestException('Provided invalid request data, must be either an object or array for batch requests');
+            }
+        } catch (Throwable $e) {
+            return $this->builder->createError($e, null, $this->debug);
         }
     }
 
-    private function execute($data): object
+    private function execute(mixed $data): object
     {
-        $method = $data->method ?? null;
-        $params = $data->params ?? null;
-        $id = $data->id ?? null;
-
-        if (empty($method)) {
-            return $this->builder->createError(new InvalidRequestException('Invalid Request'), $id);
-        }
+        $id = null;
 
         try {
-            return $this->builder->createResponse(call_user_func_array($this->callable, [$method, $params]), $id);
-        } catch (\Throwable $e) {
+            if (!$data instanceof stdClass) {
+                throw new InvalidRequestException('Provided an invalid payload, must be an object');
+            }
+
+            $method = $data->method ?? null;
+            $params = $data->params ?? null;
+            $id = $data->id ?? null;
+
+            if (!$this->validateMethod($method)) {
+                throw new InvalidRequestException('Provided method must be a string');
+            }
+
+            if (!$this->validateParams($params)) {
+                throw new InvalidRequestException('Provided params must be an array or object');
+            }
+
+            if (!$this->validateId($id)) {
+                throw new InvalidRequestException('Provided id must be an integer or string');
+            }
+
+            $return = call_user_func_array($this->callable, [$method, $params]);
+
+            return $this->builder->createResponse($return, $id);
+        } catch (Throwable $e) {
             return $this->builder->createError($e, $id, $this->debug);
         }
+    }
+
+    private function validateMethod(mixed $method): bool
+    {
+        return is_string($method) && $method !== '';
+    }
+
+    private function validateParams(mixed $params): bool
+    {
+        return is_array($params) || $params instanceof stdClass || $params === null;
+    }
+
+    private function validateId(mixed $id): bool
+    {
+        return is_string($id) || is_int($id) || $id === null;
     }
 }

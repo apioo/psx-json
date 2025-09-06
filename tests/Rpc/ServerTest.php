@@ -25,6 +25,7 @@ use PSX\Json\Rpc\Exception\InvalidRequestException;
 use PSX\Json\Rpc\Exception\MethodNotFoundException;
 use PSX\Json\Rpc\Exception\ParseErrorException;
 use PSX\Json\Rpc\Server;
+use stdClass;
 
 /**
  * ServerTest
@@ -46,106 +47,106 @@ class ServerTest extends TestCase
         $this->assertJsonStringEqualsJsonString($expect, \json_encode($actual));
     }
 
-    public function invokeProvider()
+    public static function invokeProvider(): array
     {
         return [
-            [
+            'rpc call with positional parameters' => [
                 '{"jsonrpc": "2.0", "method": "subtract", "params": [42, 23], "id": 1}',
                 '{"jsonrpc": "2.0", "result": 19, "id": 1}',
-                function($method, $arguments){
+                function (string $method, array|stdClass|null $arguments) {
                     return $arguments[0] - $arguments[1];
                 }
             ],
-            [
+            'rpc call with positional parameters reverse' => [
                 '{"jsonrpc": "2.0", "method": "subtract", "params": [23, 42], "id": 2}',
                 '{"jsonrpc": "2.0", "result": -19, "id": 2}',
-                function($method, $arguments){
+                function (string $method, array|stdClass|null $arguments) {
                     return $arguments[0] - $arguments[1];
                 }
             ],
-            [
+            'rpc call with named parameters' => [
                 '{"jsonrpc": "2.0", "method": "subtract", "params": {"subtrahend": 23, "minuend": 42}, "id": 3}',
                 '{"jsonrpc": "2.0", "result": 19, "id": 3}',
-                function($method, $arguments){
+                function (string $method, array|stdClass|null $arguments) {
                     return $arguments->minuend - $arguments->subtrahend;
                 }
             ],
-            [
+            'rpc call with named parameters reverse' => [
                 '{"jsonrpc": "2.0", "method": "subtract", "params": {"minuend": 42, "subtrahend": 23}, "id": 4}',
                 '{"jsonrpc": "2.0", "result": 19, "id": 4}',
-                function($method, $arguments){
+                function (string $method, array|stdClass|null $arguments) {
                     return $arguments->minuend - $arguments->subtrahend;
                 }
             ],
-            [
+            'a Notification' => [
                 '{"jsonrpc": "2.0", "method": "update", "params": [1,2,3,4,5]}',
                 '{"jsonrpc":"2.0","result":null,"id":null}',
-                function($method, $arguments){
+                function (string $method, array|stdClass|null $arguments) {
                     return null;
                 }
             ],
-            [
+            'rpc call without params' => [
                 '{"jsonrpc": "2.0", "method": "foobar"}',
                 '{"jsonrpc":"2.0","result":null,"id":null}',
-                function($method, $arguments){
+                function (string $method, array|stdClass|null $arguments) {
                     return null;
                 }
             ],
-            [
+            'rpc call of non-existent method' => [
                 '{"jsonrpc": "2.0", "method": "foobar", "id": 1}',
                 '{"jsonrpc": "2.0", "error": {"code": -32601, "message": "Method not found"}, "id": 1}',
-                function($method, $arguments){
+                function (string $method, array|stdClass|null $arguments) {
                     throw new MethodNotFoundException('Method not found');
                 }
             ],
-            [
+            'rpc call with invalid JSON' => [
                 '{"jsonrpc": "2.0", "method": "foobar, "params": "bar", "baz]',
-                '{"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null}',
-                function($method, $arguments){
+                '{"jsonrpc": "2.0", "error": {"code": -32600, "message": "Provided invalid request data, must be either an object or array for batch requests"}, "id": null}',
+                function (string $method, array|stdClass|null $arguments) {
                     throw new ParseErrorException('Parse error');
                 }
             ],
-            [
+            'rpc call with invalid Request object' => [
                 '{"jsonrpc": "2.0", "method": 1, "params": "bar"}',
-                '{"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null}',
-                function($method, $arguments){
+                '{"jsonrpc": "2.0", "error": {"code": -32600, "message": "Provided method must be a string"}, "id": null}',
+                function (string $method, array|stdClass|null $arguments) {
                     throw new InvalidRequestException('Invalid Request');
                 }
             ],
-            [
+            'rpc call with invalid json' => [
                 '[
   {"jsonrpc": "2.0", "method": "sum", "params": [1,2,4], "id": "1"},
   {"jsonrpc": "2.0", "method"
 ]',
-                '{"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null}',
-                function($method, $arguments){
+                '{"jsonrpc": "2.0", "error": {"code": -32600, "message": "Provided invalid request data, must be either an object or array for batch requests"}, "id": null}',
+                function (string $method, array|stdClass|null $arguments) {
                     throw new ParseErrorException('Parse error');
                 }
             ],
-            [
+            'rpc call with an empty Array' => [
                 '[]',
-                '{"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null}',
-                function($method, $arguments){
+                '{"jsonrpc": "2.0", "error": {"code": -32600, "message": "Provided no values for batch request"}, "id": null}',
+                function (string $method, array|stdClass|null $arguments) {
                     throw new InvalidRequestException('Invalid Request');
                 }
             ],
-            [
+            'rpc call with an invalid Batch (but not empty)' => [
                 '[1]',
                 '[
-  {"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null}
+  {"jsonrpc": "2.0", "error": {"code": -32600, "message": "Provided an invalid payload, must be an object"}, "id": null}
 ]',
-                function($method, $arguments){
+                function (string $method, array|stdClass|null $arguments) {
                     throw new InvalidRequestException('Invalid Request');
                 }
             ],
-            [
+            'rpc call with invalid Batch' => [
                 '[1,2,3]',
                 '[
-  {"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null},
-  {"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null},
-  {"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null}
+  {"jsonrpc": "2.0", "error": {"code": -32600, "message": "Provided an invalid payload, must be an object"}, "id": null},
+  {"jsonrpc": "2.0", "error": {"code": -32600, "message": "Provided an invalid payload, must be an object"}, "id": null},
+  {"jsonrpc": "2.0", "error": {"code": -32600, "message": "Provided an invalid payload, must be an object"}, "id": null}
 ]',
-                function($method, $arguments){
+                function (string $method, array|stdClass|null $arguments) {
                     throw new InvalidRequestException('Invalid Request');
                 }
             ],
