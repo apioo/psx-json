@@ -46,7 +46,7 @@ class Server
         $this->builder = new Builder();
     }
 
-    public function invoke(mixed $data): object|array
+    public function invoke(mixed $data, ?Context $context = null): object|array
     {
         try {
             if (is_array($data)) {
@@ -56,12 +56,12 @@ class Server
 
                 $result = [];
                 foreach ($data as $row) {
-                    $result[] = $this->execute($row);
+                    $result[] = $this->execute($row, $context);
                 }
 
                 return $result;
             } else if ($data instanceof stdClass) {
-                return $this->execute($data);
+                return $this->execute($data, $context);
             } else {
                 throw new InvalidRequestException('Provided invalid request data, must be either an object or array for batch requests');
             }
@@ -70,7 +70,7 @@ class Server
         }
     }
 
-    private function execute(mixed $data): object
+    private function execute(mixed $data, ?Context $context = null): object
     {
         $id = null;
 
@@ -95,7 +95,7 @@ class Server
                 throw new InvalidRequestException('Provided id must be an integer or string');
             }
 
-            $return = call_user_func_array($this->callable, [$method, $params]);
+            $return = call_user_func_array($this->callable, [$method, $params, $context]);
 
             return $this->builder->createResponse($return, $id);
         } catch (Throwable $e) {
