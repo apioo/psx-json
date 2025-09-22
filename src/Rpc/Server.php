@@ -35,11 +35,11 @@ use Throwable;
  */
 class Server
 {
-    private Closure $callable;
+    private mixed $callable;
     private bool $debug;
     private Builder $builder;
 
-    public function __construct(Closure $callable, bool $debug = false)
+    public function __construct(callable $callable, bool $debug = false)
     {
         $this->callable = $callable;
         $this->debug = $debug;
