@@ -31,7 +31,7 @@ class Builder
 {
     private const VERSION = '2.0';
 
-    public function createCall(string $method, mixed $arguments, int $id = null): object
+    public function createCall(string $method, mixed $arguments, int|string|null $id = null): object
     {
         return (object) [
             'jsonrpc' => self::VERSION,
@@ -41,7 +41,7 @@ class Builder
         ];
     }
 
-    public function createResponse(mixed $result, int $id = null): object
+    public function createResponse(mixed $result, int|string|null $id = null): object
     {
         return (object) [
             'jsonrpc' => self::VERSION,
@@ -50,7 +50,7 @@ class Builder
         ];
     }
 
-    public function createError(\Throwable $e, int $id = null, bool $debug = false): object
+    public function createError(\Throwable $e, int|string|null $id = null, bool $debug = false): object
     {
         $error = (object) [
             'code' => $e->getCode(),
